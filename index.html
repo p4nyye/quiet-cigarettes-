@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berhenti Merokok</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    background: linear-gradient(to bottom, #ffe8e8, #e8ffe8);
+  }
+  header {
+    background: #ff6666;
+    padding: 15px;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  .icon {
+    font-size: 60px;
+    margin: 20px 0;
+  }
+  button {
+    background: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button:hover {
+    background: #45a049;
+  }
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 10px;
+  }
+  .day {
+    padding: 15px;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .day.done {
+    background: #90ee90;
+  }
+</style>
+</head>
+<body>
+
+<header>🚭 Berhenti Merokok</header>
+
+<div class="icon" id="smokeIcon">🚬 ➡ 🙂</div>
+<p><b>Mulai hari ini, katakan selamat tinggal pada rokok!</b></p>
+<button onclick="stopSmoking()">Saya Mulai Berhenti!</button>
+
+<h3>Kalender Harian</h3>
+<div class="calendar" id="calendar"></div>
+
+<script>
+function stopSmoking() {
+  document.getElementById("smokeIcon").textContent = "🙂";
+  alert("Selamat! Perjalanan berhenti merokok dimulai!");
+}
+
+function generateCalendar() {
+  const cal = document.getElementById("calendar");
+  for (let i = 1; i <= 30; i++) {
+    const day = document.createElement("div");
+    day.className = "day";
+    day.textContent = i;
+    day.onclick = () => day.classList.toggle("done");
+    cal.appendChild(day);
+  }
+}
+generateCalendar();
+</script>
+
+</body>
+</html>
