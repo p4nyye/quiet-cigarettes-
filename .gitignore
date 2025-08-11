@@ -1,34 +1,452 @@
-# Gradle files
-.gradle/
-build/
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>QuitSmile — Hari tanpa rokok 😊</title>
+<style>
+  :root{
+    --bg:#fffbf0;
+    --card:#ffffff;
+    --accent1:#ff7a59;
+    --accent2:#ffd166;
+    --muted:#6b7280;
+    --good:#16a34a;
+  }
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,var(--accent2),#fff);
+    font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    -webkit-font-smoothing:antialiased;
+    color:#0f172a;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:20px;
+  }
 
-# Local configuration file (sdk path, etc)
-local.properties
+  .app{
+    width:100%;
+    max-width:820px;
+  }
 
-# Log/OS Files
-*.log
+  header{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    background: linear-gradient(90deg,var(--accent1),#ffb4a2);
+    color:white;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 8px 24px rgba(15,23,42,0.12);
+  }
+  header h1{margin:0;font-size:1.25rem}
+  header p{margin:0;font-size:0.9rem;opacity:0.95}
 
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-*.aab
-*.apk
-output-metadata.json
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:18px;
+    margin-top:18px;
+  }
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
 
-# IntelliJ
-*.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+  .card{
+    background:var(--card);
+    border-radius:12px;
+    padding:14px;
+    box-shadow:0 6px 18px rgba(15,23,42,0.06);
+  }
 
-# Keystore files
-*.jks
-*.keystore
+  /* Big action button */
+  .action{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    justify-content:space-between;
+  }
+  .big-btn{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:12px 16px;
+    background:linear-gradient(90deg,#fff 0%, #fff 60%);
+    border-radius:12px;
+    border: 2px solid rgba(15,23,42,0.06);
+    cursor:pointer;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+    transition:transform .14s ease, box-shadow .14s;
+    width:100%;
+  }
+  .big-btn:active{ transform:translateY(1px) }
+  .big-btn-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .big-btn .label{ font-weight:700; font-size:1rem }
+  .big-btn .sub{ font-size:0.85rem; color:var(--muted) }
 
-# Google Services (e.g. APIs or Firebase)
-google-services.json
+  /* icon container with morph */
+  .iconWrap{
+    width:56px; height:56px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg,#fff,#fff);
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    position:relative;
+    overflow:visible;
+  }
+  svg.icon{
+    width:34px; height:34px;
+  }
+  .iconBase{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%) scale(1);
+    transition:opacity .28s ease, transform .28s cubic-bezier(.2,.9,.3,1);
+    will-change:opacity, transform;
+  }
+  .iconBase.hidden{ opacity:0; transform:translate(-50%,-50%) scale(.6) rotate(-8deg); pointer-events:none; }
 
-# Android Profiling
-*.hprof
+  .statsRow{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+  .stat{ flex:1 1 120px; background:linear-gradient(180deg,#fff,#fff); padding:10px; border-radius:10px; text-align:center; }
+  .stat strong{display:block; font-size:1.1rem}
+
+  /* calendar */
+  .calendarHeader{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .monthNav{ display:flex; gap:8px; }
+  .monthBtn{ background:transparent; border:1px solid rgba(15,23,42,0.06); padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .weekdays{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:10px; color:var(--muted); font-size:0.82rem; }
+  .days{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:8px; }
+  .day{
+    background:linear-gradient(180deg,#fff,#fff);
+    border-radius:8px; padding:10px; min-height:68px;
+    display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s;
+    border:1px solid rgba(15,23,42,0.03);
+  }
+  .day:hover{ transform:translateY(-3px); box-shadow:0 8px 18px rgba(15,23,42,0.06); }
+  .day.small{ padding:6px; min-height:42px; font-size:0.85rem }
+  .day.today{ outline:3px solid rgba(34,197,94,0.12); }
+  .day.marked{ background:linear-gradient(90deg,#d1fae5,#bbf7d0); border:1px solid rgba(16,185,129,0.18) }
+
+  .footerNote{ margin-top:14px; font-size:0.85rem; color:var(--muted) }
+
+  /* cheerful smile animation on icon pulse */
+  .smilePulse{
+    animation: pop .7s ease;
+  }
+  @keyframes pop{
+    0%{ transform:scale(0.8) }
+    60%{ transform:scale(1.08) }
+    100%{ transform:scale(1) }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div style="display:flex;flex-direction:column">
+        <h1>QuitSmile</h1>
+        <p>Ajak diri tersenyum — tandai hari tanpa rokok 💪😊</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- main column -->
+      <div>
+        <div class="card">
+          <div class="action">
+            <div style="flex:1">
+              <div class="big-btn" id="toggleToday" role="button" aria-pressed="false" aria-label="Tandai hari ini bebas rokok">
+                <div class="big-btn-left">
+                  <div class="iconWrap" aria-hidden="true">
+                    <!-- cigarette icon -->
+                    <div id="svgCig" class="iconBase">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="9.5" width="14" height="5" rx="1.5" fill="#374151"/>
+                        <rect x="16" y="10.5" width="5" height="2.5" rx="1" fill="#f3f4f6"/>
+                        <path d="M21 7.5c0 .83-.67 1.5-1.5 1.5S18 8.33 18 7.5 18.67 6 19.5 6 21 6.67 21 7.5z" fill="#f97316"/>
+                        <path d="M19.5 4c-.83 0-1.5.67-1.5 1.5v1" stroke="#f97316" stroke-width="1" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <!-- smile icon -->
+                    <div id="svgSmile" class="iconBase hidden">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="#f59e0b"/>
+                        <path d="M8 10c.8 0 1.4-.6 1.4-1.4S8.8 7.2 8 7.2 6.6 7.8 6.6 8.6 7.2 10 8 10zM16 10c.8 0 1.4-.6 1.4-1.4S16.8 7.2 16 7.2s-1.4.6-1.4 1.4S15.2 10 16 10z" fill="#fff" />
+                        <path d="M7.5 15c1.2 1.2 2.9 2 4.5 2s3.3-.8 4.5-2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="label" id="btnLabel">Tandai Hari Ini</div>
+                    <div class="sub" id="btnSub">Klik kalau hari ini kamu bebas rokok</div>
+                  </div>
+                </div>
+
+                <div style="min-width:80px; text-align:right;">
+                  <div id="todayCount" style="font-weight:800; font-size:1.05rem">0</div>
+                  <div style="font-size:0.78rem; color:var(--muted)">hari bebas</div>
+                </div>
+              </div>
+
+              <div style="margin-top:10px; font-size:0.9rem; color:var(--muted)">Tekan tombol sekali untuk menandai; tekan lagi untuk batalkan.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="calendarHeader">
+            <strong>Kalender</strong>
+            <div class="monthNav">
+              <button class="monthBtn" id="prevMonth" aria-label="Bulan sebelumnya">◀</button>
+              <div id="monthLabel" style="min-width:140px; text-align:center"></div>
+              <button class="monthBtn" id="nextMonth" aria-label="Bulan berikutnya">▶</button>
+            </div>
+          </div>
+
+          <div class="weekdays" aria-hidden="true">
+            <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+          </div>
+
+          <div id="daysGrid" class="days" role="grid" aria-label="Hari dalam bulan"></div>
+
+          <div class="footerNote">
+            <span id="markedInfo">0</span> hari yang telah ditandai sebagai bebas rokok di bulan ini.
+          </div>
+        </div>
+      </div>
+
+      <!-- side column -->
+      <aside>
+        <div class="card">
+          <h3>Motivasi</h3>
+          <p id="motivasiText" style="font-size:0.98rem; margin-bottom:8px">Setiap hari bebas rokok = senyuman untuk tubuhmu.</p>
+          <button id="newMotivation" style="width:100%">Motivasi Lain</button>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Ringkasan</h3>
+          <div class="statsRow" style="margin-top:8px">
+            <div class="stat">
+              <div style="font-size:0.78rem; color:var(--muted)">Total Bulan</div>
+              <strong id="totalMonths">1</strong>
+            </div>
+            <div class="stat">
+              <div style="font-size:0.78rem; color:var(--muted)">Hari Bulan Ini</div>
+              <strong id="daysInMonth">30</strong>
+            </div>
+            <div class="stat">
+              <div style="font-size:0.78rem; color:var(--muted)">Tandai Bulan Ini</div>
+              <strong id="markedThisMonth">0</strong>
+            </div>
+          </div>
+          <div style="margin-top:10px; font-size:0.85rem; color:var(--muted)">
+            Data tersimpan di perangkatmu (localStorage). Untuk membagikan, ekspor lalu upload file.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+/* ========= Utilities ========= */
+const STORAGE_KEY = 'quitsmile_marks_v1'; // structure: { 'YYYY-MM': { 'YYYY-MM-DD': true, ... }, ... }
+const MOTIVATIONS = [
+  "Setiap hari bebas rokok = lebih banyak senyum 😊",
+  "Kecil tapi berarti — hari tanpa rokok hari yang lebih sehat.",
+  "Keluarga bangga, napas lega.",
+  "Ganti sebatang rokok dengan satu napas panjang — kamu bisa!",
+  "Satu hari tanpa rokok, satu langkah menuju sehat."
+];
+
+function ymd(date){ return date.toISOString().split('T')[0]; }
+function ym(date){ return date.toISOString().slice(0,7); }
+
+/* ========= State ========= */
+let state = {
+  viewDate: new Date(), // currently shown month
+  marks: JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+};
+
+/* ========= DOM refs ========= */
+const svgCig = document.getElementById('svgCig');
+const svgSmile = document.getElementById('svgSmile');
+const toggleTodayBtn = document.getElementById('toggleToday');
+const btnLabel = document.getElementById('btnLabel');
+const btnSub = document.getElementById('btnSub');
+const todayCountEl = document.getElementById('todayCount');
+const daysGrid = document.getElementById('daysGrid');
+const monthLabel = document.getElementById('monthLabel');
+const prevMonthBtn = document.getElementById('prevMonth');
+const nextMonthBtn = document.getElementById('nextMonth');
+const markedInfo = document.getElementById('markedInfo');
+const markedThisMonth = document.getElementById('markedThisMonth');
+const daysInMonthEl = document.getElementById('daysInMonth');
+const totalMonthsEl = document.getElementById('totalMonths');
+const motivasiText = document.getElementById('motivasiText');
+const newMotivationBtn = document.getElementById('newMotivation');
+
+/* ========= Actions ========= */
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.marks));
+}
+
+function toggleToday(){
+  const today = new Date();
+  const keyMonth = ym(today);
+  const keyDay = ymd(today);
+  state.marks[keyMonth] = state.marks[keyMonth] || {};
+  const already = !!state.marks[keyMonth][keyDay];
+  if(already){
+    delete state.marks[keyMonth][keyDay];
+  } else {
+    state.marks[keyMonth][keyDay] = true;
+  }
+  saveState();
+  updateUI();
+  // icon animation
+  if(!already){
+    svgSmile.classList.remove('hidden'); svgSmile.classList.add('smilePulse');
+    svgCig.classList.add('hidden');
+    setTimeout(()=> svgSmile.classList.remove('smilePulse'), 700);
+  } else {
+    svgCig.classList.remove('hidden');
+    svgSmile.classList.add('hidden');
+  }
+}
+
+toggleTodayBtn.addEventListener('click', toggleToday);
+
+/* Month navigation */
+prevMonthBtn.addEventListener('click', () => {
+  state.viewDate.setMonth(state.viewDate.getMonth() - 1);
+  renderCalendar();
+});
+nextMonthBtn.addEventListener('click', () => {
+  state.viewDate.setMonth(state.viewDate.getMonth() + 1);
+  renderCalendar();
+});
+
+/* Motivasi */
+function setRandomMotivation(){
+  const i = Math.floor(Math.random()*MOTIVATIONS.length);
+  motivasiText.textContent = MOTIVATIONS[i];
+}
+newMotivationBtn.addEventListener('click', setRandomMotivation);
+
+/* ========= Rendering ========= */
+
+function countTotalMarkedThisMonth(date){
+  const k = date.toISOString().slice(0,7);
+  const m = state.marks[k] || {};
+  return Object.keys(m).length;
+}
+
+function countTotalMarkedAll(){
+  return Object.values(state.marks).reduce((acc, obj)=> acc + Object.keys(obj).length, 0);
+}
+
+function updateUI(){
+  // Update today button label + count
+  const today = new Date();
+  const monthKey = ym(today);
+  const dayKey = ymd(today);
+  const todayMarked = !!(state.marks[monthKey] && state.marks[monthKey][dayKey]);
+  toggleTodayBtn.setAttribute('aria-pressed', String(todayMarked));
+  btnLabel.textContent = todayMarked ? "Hari Ini: Bebas Rokok!" : "Tandai Hari Ini";
+  btnSub.textContent = todayMarked ? "Bagus! Simpan energi dan senyummu." : "Klik kalau hari ini kamu bebas rokok";
+  // show correct icon
+  if(todayMarked){
+    svgCig.classList.add('hidden');
+    svgSmile.classList.remove('hidden');
+  } else {
+    svgCig.classList.remove('hidden');
+    svgSmile.classList.add('hidden');
+  }
+  // counts
+  todayCountEl.textContent = countTotalMarkedAll();
+  // side stats
+  totalMonthsEl.textContent = Object.keys(state.marks).length || 1;
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const view = state.viewDate;
+  const year = view.getFullYear();
+  const month = view.getMonth();
+  // label
+  const monthName = view.toLocaleString('id-ID',{month:'long'});
+  monthLabel.textContent = `${monthName} ${year}`;
+  // compute days grid for month (show full weeks start Sun)
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month+1, 0);
+  const startDay = new Date(first);
+  startDay.setDate(first.getDate() - first.getDay()); // go to Sunday of first week
+  const endDay = new Date(last);
+  endDay.setDate(last.getDate() + (6 - last.getDay())); // Saturday of last week
+
+  daysGrid.innerHTML = '';
+  let cursor = new Date(startDay);
+  const marksForMonth = state.marks[ym(view)] || {};
+  let markedCount = 0;
+  let totalDaysInMonth = last.getDate();
+  daysInMonthEl.textContent = totalDaysInMonth;
+
+  while(cursor <= endDay){
+    const cell = document.createElement('div');
+    cell.className = 'day' + (cursor.getMonth() === month ? '' : ' small');
+    if(cursor.getMonth() === month && ymd(cursor) === ymd(new Date())) cell.classList.add('today');
+
+    const dayNum = document.createElement('div');
+    dayNum.textContent = cursor.getDate();
+    dayNum.style.fontWeight = '700';
+
+    const note = document.createElement('div');
+    note.style.fontSize = '0.82rem';
+    note.style.color = 'var(--muted)';
+
+    const keyFull = ymd(cursor);
+    if(state.marks[ym(cursor)] && state.marks[ym(cursor)][keyFull]){
+      cell.classList.add('marked');
+      note.textContent = 'Bebas ✓';
+      if(cursor.getMonth() === month) markedCount++;
+    } else {
+      note.textContent = cursor.getMonth() === month ? '—' : '';
+    }
+
+    // allow clicking only on days in the shown month
+    if(cursor.getMonth() === month){
+      cell.addEventListener('click', ()=> {
+        const kMonth = ym(cursor);
+        state.marks[kMonth] = state.marks[kMonth] || {};
+        if(state.marks[kMonth][keyFull]) delete state.marks[kMonth][keyFull];
+        else state.marks[kMonth][keyFull] = true;
+        saveState();
+        updateUI();
+      });
+    }
+
+    cell.appendChild(dayNum);
+    cell.appendChild(note);
+    daysGrid.appendChild(cell);
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  markedInfo.textContent = `${markedCount} hari`;
+  markedThisMonth.textContent = markedCount;
+}
+
+(function init(){
+  if(!state.marks) state.marks = {};
+  setRandomMotivation();
+  updateUI();
+})();
+</script>
+</body>
+</html>
